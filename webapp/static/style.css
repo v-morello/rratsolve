@@ -1,0 +1,31 @@
+body {
+    font-family: sans-serif;
+    color: #303030;
+}
+
+h1 {
+    font-size: xx-large;
+}
+
+form#input label {
+    font-size: medium;
+    font-weight: bold;
+}
+
+form#input textarea {
+    font-size: large;
+}
+
+form#input input {
+    font-size: large;
+    padding: 4px 16px;
+}
+
+div#results {
+    font-family: monospace;
+    font-size: larger;
+}
+
+p#period {
+    font-weight: bold;
+}

@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <title>RRATSolve</title>
+    </head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+    </script>
+
+    <body>
+        <h1>RRATSolve WebApp</h1>
+        <hr>
+
+        <div id="results">
+        <pre>TOAs = {{toas}}</pre>
+        <p>TOA Uncertainty = {{toa_uncertainty}} s</p>
+        <p id="period">Period = {{period}} s</p>
+        </div>
+
+    </body>
+</html>
