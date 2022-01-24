@@ -33,7 +33,7 @@ def solve():
     toa_uncertainty = request.args.get('uncertainty')
     T = parse_toas(toas)
     u = float(toa_uncertainty)
-    set_last_result(rratsolve(T, u))
+    set_last_result(rratsolve(T, u, max_grid_size=30_000_000))
     return render_template('solve.html')
 
 

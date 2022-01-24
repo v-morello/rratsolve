@@ -46,7 +46,7 @@ def format_uncertain_quantity(q, u):
     return f"{qr:.{decimals}f}({ur})"
 
 
-def rratsolve(toas, toa_uncertainties):
+def rratsolve(toas, toa_uncertainty, max_grid_size=None):
     """
     Find the longest spin period that fits a sparse set of single pulse TOAs.
 
@@ -54,9 +54,12 @@ def rratsolve(toas, toa_uncertainties):
     ----------
     toas : list or ndarray
         Pulsar arrival MJDs.
-    sigma : list, ndarray or float
+    toa_uncertainty : list, ndarray or float
         The TOA uncertainties in seconds. If a scalar is passed, then the TOA uncertainties
         are considered to be all equal to this value.
+    max_grid_size : int or None
+        Maximum allowed number of points in the trial grid. If None, no limit is enforced.
+        If not None and the limit is exceeded, raise ValueError.
 
     Returns
     -------
@@ -68,12 +71,8 @@ def rratsolve(toas, toa_uncertainties):
     start_time = time.time()
 
     n = len(toas)
-    if np.isscalar(toa_uncertainties):
-        toa_uncertainties = np.repeat(toa_uncertainties, n)
-        iref = 0
-    else:
-        iref = toa_uncertainties.argmin()
-    
+    toa_uncertainties = np.repeat(toa_uncertainty, n)
+    iref = 0
     logger.debug(f"Using TOA #{iref} as reference")
 
     tref = toas[iref]
@@ -95,6 +94,12 @@ def rratsolve(toas, toa_uncertainties):
     logger.debug(f"Min trial period: {pgrid[0]:.6f}")
     logger.debug(f"Max trial period: {pgrid[-1]:.6f}")
     logger.debug(f"Period grid size: {pgrid.size:,}")
+
+    if max_grid_size is not None and pgrid.size > max_grid_size:
+        raise ValueError(
+            "Trial grid size would exceed allowed maximum. "
+            "Try reducing the time span of the TOAs or increasing the estimated TOA uncertainty"
+        )
 
     trial_grid = TrialGrid(size=pgrid.size, period_min=pgrid[0], period_max=pgrid[-1])
 
