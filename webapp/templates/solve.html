@@ -25,11 +25,13 @@
                 let uc = $('<td>').text((1000.0 * jsonData.toa_uncertainties[i]).toFixed(2));
                 let scaled_uc = $('<td>').text((1000.0 * jsonData.scaled_toa_uncertainties[i]).toFixed(2));
                 let rot = $('<td>').text(jsonData.rotation_indices[i]);
+                let res = $('<td>').text((1000.0 * jsonData.residuals[i]).toFixed(2));
 
                 row.append(toa);
                 row.append(uc);
                 row.append(scaled_uc);
                 row.append(rot)
+                row.append(res)
                 toas_table.append(row);
             }
 
@@ -79,8 +81,13 @@
                 <td>Input Uncertainty (ms)</td>
                 <td>Scaled Uncertainty (ms)</td>
                 <td>Rotation Index</td>
+                <td>Time Interval Fit Residual (ms)</td>
             </tr>
         </table>
+        <p class='comment'>
+            Only time intervals with respect to the first TOA are fitted.<br>
+            Initial phase is <b>not</b> fitted, which is why the fit residuals usually do not average to zero.
+        </p>
         </div>
 
         <hr id='footer-sep'>

@@ -1,9 +1,7 @@
-from cgitb import reset
 import logging
 import time
 from dataclasses import dataclass
 from typing import List
-from matplotlib import scale
 
 import numpy as np
 from numpy import log, exp, log10
@@ -27,6 +25,7 @@ class Result:
     period_uncertainty: float
     formatted_period: str
     scaled_toa_uncertainties: List[float]
+    residuals: List[float]
     solve_time: float
 
 
@@ -142,6 +141,7 @@ def rratsolve(toas, toa_uncertainties):
     # NOTE: must cast to int from np.int64 to avoid JSON serialization problems later
     # Also, the rotation index of the first TOA is always 0
     rotation_indices = [0] + list(map(int, Kopt.ravel()))
+    time_residuals = [0] + list(time_residuals)
 
     end_time = time.time()
     logger.debug(f"Run time: {end_time - start_time:.3f} s")
@@ -155,6 +155,7 @@ def rratsolve(toas, toa_uncertainties):
         period_uncertainty=pstar_uncertainty,
         formatted_period=sol_str,
         scaled_toa_uncertainties=list(toa_uncertainties * uscale),
+        residuals=time_residuals,
         solve_time=end_time - start_time
     )
     return result
