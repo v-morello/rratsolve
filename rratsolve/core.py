@@ -72,15 +72,12 @@ def rratsolve(toas, toa_uncertainty, max_grid_size=None):
     n = len(toas)
     toa_uncertainties = np.repeat(toa_uncertainty, n)
     iref = 0
-    #logger.debug(f"Using TOA #{iref} as reference")
-
     tref = toas[iref]
     toas = np.asarray(toas)
     T = (toas - tref) * DAY_SECONDS
 
     T = np.delete(T, iref).reshape(-1, 1)
     sigma = np.delete(toa_uncertainties, iref)
-    #logger.debug(f"Time intervals: {T.ravel()}")
 
     C = np.diag(sigma**2) + sigma[iref]**2
     M = np.linalg.inv(C)
@@ -90,9 +87,6 @@ def rratsolve(toas, toa_uncertainty, max_grid_size=None):
     delta_logp = n**0.5 * dot3(T.T, M, T) ** -0.5
 
     pgrid = exp( np.arange(log(pmin), log(pmax), delta_logp) )
-    #logger.debug(f"Min trial period: {pgrid[0]:.6f}")
-    #logger.debug(f"Max trial period: {pgrid[-1]:.6f}")
-    #logger.debug(f"Period grid size: {pgrid.size:,}")
 
     if max_grid_size is not None and pgrid.size > max_grid_size:
         raise ValueError(
@@ -116,31 +110,21 @@ def rratsolve(toas, toa_uncertainty, max_grid_size=None):
     q = (np.dot(M, R) * R).sum(axis=0)
 
     iopt = q.argmin()
-    popt = pgrid[iopt]
     Kopt = K[:, iopt].reshape(-1, 1)
-    #logger.debug(f"Initial period guess: {popt:.6f}")
-
     pstar = dot3(T.T, M, Kopt) / dot3(Kopt.T, M, Kopt)
-    #logger.debug(f"Refined period guess: {pstar:.6f}")
 
     Dstar = T / pstar
     Kstar = Dstar.round().astype(int)
     Rstar = Dstar - Kstar
     Qstar = (np.dot(M, Rstar) * Rstar).sum() * pstar**2
-
     time_residuals = (Rstar * pstar).ravel()
-    #logger.debug(f"Time intervals residuals: {time_residuals}")
 
     # Uncertainty scaling factor such that Qstar = n - 1
     uscale = (Qstar / (n - 1)) ** 0.5
-    #logger.debug(f"Uncertainty scaling factor: {uscale:.4f}")
-    #logger.debug(f"Scaled TOA uncertainties: {toa_uncertainties * uscale}")
 
     # 1-sigma uncertainty on Pstar
     pstar_uncertainty = pstar * dot3(T.T, M, T)**-0.5 * uscale
-
-    sol_str = format_uncertain_quantity(pstar, pstar_uncertainty)
-    #logger.debug(f"Best-fit period: {sol_str} s")
+    formatted_period = format_uncertain_quantity(pstar, pstar_uncertainty)
 
     # NOTE: must cast to int from np.int64 to avoid JSON serialization problems later
     # Also, the rotation index of the first TOA is always 0
@@ -148,7 +132,6 @@ def rratsolve(toas, toa_uncertainty, max_grid_size=None):
     time_residuals = [0] + list(time_residuals)
 
     end_time = time.time()
-    #logger.debug(f"Run time: {end_time - start_time:.3f} s")
 
     result = Result(
         toas=list(toas),
@@ -157,7 +140,7 @@ def rratsolve(toas, toa_uncertainty, max_grid_size=None):
         rotation_indices=rotation_indices,
         period=pstar,
         period_uncertainty=pstar_uncertainty,
-        formatted_period=sol_str,
+        formatted_period=formatted_period,
         scaled_toa_uncertainties=list(toa_uncertainties * uscale),
         residuals=time_residuals,
         solve_time=end_time - start_time
