@@ -31,8 +31,12 @@ def result_json(result_id=""):
 def solve():
     toas = request.args.get('toas')
     toa_uncertainty = request.args.get('uncertainty')
-    T = parse_toas(toas)
-    u = float(toa_uncertainty)
+
+    try:
+        T = parse_toas(toas)
+        u = float(toa_uncertainty)
+    except Exception as err:
+        raise ValueError("Failed to parse input")
 
     # Store result until it is fetched by the results webpage
     result_id = str(uuid.uuid4())
