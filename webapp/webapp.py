@@ -38,6 +38,9 @@ def solve():
     except Exception as err:
         raise ValueError("Failed to parse input")
 
+    if not len(T) >= 3:
+        raise ValueError("Need at least 3 TOAs")
+
     # Store result until it is fetched by the results webpage
     result_id = str(uuid.uuid4())
     results_cache[result_id] = rratsolve(T, u, max_grid_size=30_000_000)
