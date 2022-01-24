@@ -3,6 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
         <title>RRATSolve</title>
     </head>
 
@@ -12,7 +13,7 @@
     </script>
 
     <body>
-        <h1>RRATSolve WebApp</h1>
+        <h1>RRATSolve</h1>
         <hr>
 
         <form id="input" action="http://localhost:5000/solve" method="get">
@@ -28,6 +29,12 @@
 
             <input type="submit" id="solve" value="Solve">
         </form>
+
+        <hr id='footer-sep'>
+        <footer>
+            <div>RRATSolve v0.1.0</div>
+            <div>Author: Vincent Morello</div>
+        </footer> 
 
     </body>
 </html>

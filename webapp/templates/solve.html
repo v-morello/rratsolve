@@ -3,23 +3,91 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+        <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
         <title>RRATSolve</title>
     </head>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <script>
+        function renderData(jsonData) {
+            // toLocaleString() adds commas as thousand separators
+            $('#grid-table #size').text(jsonData.grid.size.toLocaleString());
+            $('#grid-table #period-min').text(jsonData.grid.period_min.toFixed(3));
+            $('#grid-table #period-max').text(jsonData.grid.period_max.toFixed(3));
+
+            let n = jsonData.toas.length;
+            let toas_table = $('table#toas-table');
+            console.log(toas_table);
+            for (let i = 0; i < n; ++i) {
+                let row = $('<tr>');
+                let toa = $('<td>').text(jsonData.toas[i]);
+                let uc = $('<td>').text((1000.0 * jsonData.toa_uncertainties[i]).toFixed(2));
+                let scaled_uc = $('<td>').text((1000.0 * jsonData.scaled_toa_uncertainties[i]).toFixed(2));
+                let rot = $('<td>').text(jsonData.rotation_indices[i]);
+
+                row.append(toa);
+                row.append(uc);
+                row.append(scaled_uc);
+                row.append(rot)
+                toas_table.append(row);
+            }
+
+            $('p#solution').text(`P = ${jsonData.formatted_period} s`);
+            $('p#solve-time').text(`Solve time: ${jsonData.solve_time.toFixed(3)} seconds`);
+
+        }
+        $(document).ready(
+            $.getJSON('/result.json', renderData)
+        );
     </script>
 
     <body>
-        <h1>RRATSolve WebApp</h1>
+        <h1>RRATSolve</h1>
         <hr>
 
-        <div id="results">
-        <pre>TOAs = {{toas}}</pre>
-        <p>TOA Uncertainty = {{toa_uncertainty}} s</p>
-        <p id="period">Period = {{period}} s</p>
+        <div class='section'>
+        <h2>Solution</h2>
+        <p id='solution'></p>
+        <p id='solve-time' class='comment'></p>
         </div>
+
+        <div class='section'>
+        <h2>Trial Grid Parameters</h2>
+        <table id='grid-table'>
+            <tr>
+                <td>Size</td>
+                <td id='size'></td>
+            </tr>
+            <tr>
+                <td>Min. Period (ms)</td>
+                <td id='period-min'></td>
+            </tr>
+            <tr>
+                <td>Max. Period (ms)</td>
+                <td id='period-max'></td>
+            </tr>
+        </table>
+        <p class='comment'>Trials are geometrically spaced between min. and max. period.</p>
+        </div>
+
+        <div class='section'>
+        <h2>TOAs</h2>
+        <table id='toas-table'>
+            <tr>
+                <td>TOA</td>
+                <td>Input Uncertainty (ms)</td>
+                <td>Scaled Uncertainty (ms)</td>
+                <td>Rotation Index</td>
+            </tr>
+        </table>
+        </div>
+
+        <hr id='footer-sep'>
+        <footer>
+            <div>RRATSolve v0.1.0</div>
+            <div>Author: Vincent Morello</div>
+        </footer> 
 
     </body>
 </html>

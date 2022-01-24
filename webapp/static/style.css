@@ -1,10 +1,20 @@
 body {
-    font-family: sans-serif;
+    font-family: 'Lato', sans-serif;
     color: #303030;
 }
 
 h1 {
     font-size: xx-large;
+}
+
+h2 {
+    font-size: larger;
+    color: #303030;
+}
+
+div.section {
+    padding-top: 5px;
+    padding-bottom: 20px;
 }
 
 form#input label {
@@ -21,11 +31,71 @@ form#input input {
     padding: 4px 16px;
 }
 
-div#results {
+
+#grid-table {
+    border: solid 1px grey;
+    border-spacing: 0;
+    border-radius: 4px;
     font-family: monospace;
-    font-size: larger;
+    font-size: large;
 }
 
-p#period {
+#grid-table td {
+    padding-left: 5px;
+    padding-right: 30px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+#grid-table tr td:first-child {
+    background-color: #ffebcf;
     font-weight: bold;
+}
+
+
+#toas-table {
+    border: solid 1px grey;
+    border-spacing: 0;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: large;
+}
+
+#toas-table tr:first-child {
+    font-weight: bold;
+    background-color: #ffebcf;
+    border: solid 1px grey;
+}
+
+#toas-table td {
+    padding-left: 5px;
+    padding-right: 30px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+p#solution {
+    font-family: monospace;
+    font-weight: bold;
+    font-size: x-large;
+    background-color: lightgray;
+    border: solid 1px #303030;
+    border-radius: 4px;
+    width: 250px;
+    padding: 5px;
+}
+
+.comment {
+    color: grey;
+    font-size: small;
+}
+
+
+hr #footer-sep {
+    border: solid 1px red;
+}
+
+footer {
+    color: grey;
+    font-size: small;
 }

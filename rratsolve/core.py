@@ -1,8 +1,33 @@
+from cgitb import reset
 import logging
 import time
+from dataclasses import dataclass
+from typing import List
+from matplotlib import scale
 
 import numpy as np
 from numpy import log, exp, log10
+
+
+@dataclass
+class TrialGrid:
+    """ Stores trial grid parameters """
+    size: int
+    period_min: float
+    period_max: float
+
+@dataclass
+class Result:
+    """ Stores fit results """
+    toas: List[float]
+    toa_uncertainties: List[float]
+    grid: TrialGrid
+    rotation_indices: List[int]
+    period: float
+    period_uncertainty: float
+    formatted_period: str
+    scaled_toa_uncertainties: List[float]
+    solve_time: float
 
 
 DAY_SECONDS = 86400.0
@@ -22,7 +47,7 @@ def format_uncertain_quantity(q, u):
     return f"{qr:.{decimals}f}({ur})"
 
 
-def rratsolve(toas, sigma):
+def rratsolve(toas, toa_uncertainties):
     """
     Find the longest spin period that fits a sparse set of single pulse TOAs.
 
@@ -42,13 +67,13 @@ def rratsolve(toas, sigma):
         The estimated 1-sigma period uncertainty.
     """
     start_time = time.time()
-    n = len(toas)
 
-    if np.isscalar(sigma):
-        sigma = np.repeat(sigma, n)
+    n = len(toas)
+    if np.isscalar(toa_uncertainties):
+        toa_uncertainties = np.repeat(toa_uncertainties, n)
         iref = 0
     else:
-        iref = sigma.argmin()
+        iref = toa_uncertainties.argmin()
     
     logger.debug(f"Using TOA #{iref} as reference")
 
@@ -57,20 +82,22 @@ def rratsolve(toas, sigma):
     T = (toas - tref) * DAY_SECONDS
 
     T = np.delete(T, iref).reshape(-1, 1)
-    sigma = np.delete(sigma, iref)
+    sigma = np.delete(toa_uncertainties, iref)
     logger.debug(f"Time intervals: {T.ravel()}")
 
     C = np.diag(sigma**2) + sigma[iref]**2
     M = np.linalg.inv(C)
 
     pmin = 10 * sigma.max()
-    pmax = 1.1 * T.min() + 10 * sigma.max()
+    pmax = 1.1 * abs(T).min() + 10 * sigma.max()
     delta_logp = n**0.5 * dot3(T.T, M, T) ** -0.5
 
     pgrid = exp( np.arange(log(pmin), log(pmax), delta_logp) )
     logger.debug(f"Min trial period: {pgrid[0]:.6f}")
     logger.debug(f"Max trial period: {pgrid[-1]:.6f}")
     logger.debug(f"Period grid size: {pgrid.size:,}")
+
+    trial_grid = TrialGrid(size=pgrid.size, period_min=pgrid[0], period_max=pgrid[-1])
 
     # Estimated fractional turn counts
     D = T / pgrid
@@ -104,14 +131,30 @@ def rratsolve(toas, sigma):
     # Uncertainty scaling factor such that Qstar = n - 1
     uscale = (Qstar / (n - 1)) ** 0.5
     logger.debug(f"Uncertainty scaling factor: {uscale:.4f}")
-    logger.debug(f"Scaled TOA uncertainties: {sigma * uscale}")
+    logger.debug(f"Scaled TOA uncertainties: {toa_uncertainties * uscale}")
 
     # 1-sigma uncertainty on Pstar
-    pstar_uncertainty = pstar * dot3(T.T, M, T) **-0.5 * uscale
+    pstar_uncertainty = pstar * dot3(T.T, M, T)**-0.5 * uscale
 
     sol_str = format_uncertain_quantity(pstar, pstar_uncertainty)
     logger.debug(f"Best-fit period: {sol_str} s")
-    end_time = time.time()
 
+    # NOTE: must cast to int from np.int64 to avoid JSON serialization problems later
+    # Also, the rotation index of the first TOA is always 0
+    rotation_indices = [0] + list(map(int, Kopt.ravel()))
+
+    end_time = time.time()
     logger.debug(f"Run time: {end_time - start_time:.3f} s")
-    return pstar, pstar_uncertainty
+
+    result = Result(
+        toas=list(toas),
+        toa_uncertainties=list(toa_uncertainties),
+        grid=trial_grid,
+        rotation_indices=rotation_indices,
+        period=pstar,
+        period_uncertainty=pstar_uncertainty,
+        formatted_period=sol_str,
+        scaled_toa_uncertainties=list(toa_uncertainties * uscale),
+        solve_time=end_time - start_time
+    )
+    return result
