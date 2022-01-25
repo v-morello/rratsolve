@@ -1,9 +1,7 @@
 import json
-import logging
 import uuid
-import coloredlogs
 from dataclasses import asdict
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
 from rratsolve import rratsolve
 
 
@@ -57,5 +55,4 @@ def main():
 
 
 if __name__ == '__main__':
-    coloredlogs.install(logger=logging.getLogger('rratsolve'), level='DEBUG')
     main()
