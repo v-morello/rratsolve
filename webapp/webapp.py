@@ -2,7 +2,7 @@ import json
 import uuid
 from dataclasses import asdict
 from flask import Flask, render_template, request
-from rratsolve import rratsolve
+from rratsolve import rratsolve, __version__
 
 
 app = Flask(__name__)
@@ -42,12 +42,12 @@ def solve():
     # Store result until it is fetched by the results webpage
     result_id = str(uuid.uuid4())
     results_cache[result_id] = rratsolve(T, u, max_grid_size=30_000_000)
-    return render_template('results.html', result_id=result_id)
+    return render_template('results.html', result_id=result_id, version=__version__)
 
 
 @app.route('/')
 def mainpage():
-    return render_template('index.html')
+    return render_template('index.html', version=__version__)
 
 
 def main():
