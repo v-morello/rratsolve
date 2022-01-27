@@ -13,8 +13,9 @@ h2 {
 }
 
 div.section {
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-top: 0px;
+    padding-bottom: 15px;
+    border-bottom: 1px black dotted;
 }
 
 form#input label {
@@ -67,8 +68,9 @@ form#input input {
 }
 
 #grid-table tr td:first-child {
-    background-color: #ffebcf;
+    background-color: blanchedalmond;
     font-weight: bold;
+    color: black;
 }
 
 
@@ -82,8 +84,8 @@ form#input input {
 
 #toas-table tr:first-child {
     font-weight: bold;
-    background-color: #ffebcf;
-    border: solid 1px grey;
+    background-color: blanchedalmond;
+    color: black;
 }
 
 #toas-table td {
@@ -97,7 +99,8 @@ p#solution {
     font-family: monospace;
     font-weight: bold;
     font-size: x-large;
-    background-color: lightgray;
+    background-color: #022140;
+    color: white;
     border: solid 1px #303030;
     border-radius: 4px;
     width: 250px;
@@ -105,16 +108,14 @@ p#solution {
 }
 
 .comment {
-    color: grey;
-    font-size: small;
+    color: slategrey;
+    font-size: medium;
 }
 
-
-hr #footer-sep {
-    border: solid 1px red;
-}
 
 footer {
-    color: grey;
+    color: slategrey;
     font-size: small;
+    padding: 20px 0px;
+    border-bottom: 1px black solid;
 }

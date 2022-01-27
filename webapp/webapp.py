@@ -1,8 +1,7 @@
 import json
 import uuid
 from dataclasses import asdict
-from flask import Flask, render_template, request, redirect, url_for
-from importlib_metadata import version
+from flask import Flask, render_template, request
 from rratsolve import rratsolve, __version__
 
 

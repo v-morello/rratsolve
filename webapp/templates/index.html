@@ -16,21 +16,22 @@
         <h1>RRATSolve</h1>
         <hr>
 
-        <form id="input" action="/results" method="get">
-            <label>TOAs</label>
-            <br>
-            <textarea name="toas" rows="10" cols="40"></textarea>
-            <br><br>
+        <div class="section">
+            <form id="input" action="/results" method="get">
+                <label>TOAs</label>
+                <br>
+                <textarea name="toas" rows="10" cols="40"></textarea>
+                <br><br>
 
-            <label>Estimated TOA RMS Uncertainty (s)</label>
-            <br>
-            <textarea name="uncertainty" rows="1" cols="40" id="uncertainty">0.01</textarea>
-            <br><br>
+                <label>Estimated TOA RMS Uncertainty (s)</label>
+                <br>
+                <textarea name="uncertainty" rows="1" cols="40" id="uncertainty">0.01</textarea>
+                <br><br>
 
-            <input type="submit" id="solve" value="Solve">
-        </form>
+                <input type="submit" id="solve" value="Solve">
+            </form>
+        </div>
 
-        <hr id='footer-sep'>
         <footer>
             <div>RRATSolve v{{version}}</div>
             <div>Author: Vincent Morello</div>
