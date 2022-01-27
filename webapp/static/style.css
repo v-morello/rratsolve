@@ -31,6 +31,25 @@ form#input input {
     padding: 4px 16px;
 }
 
+#error-container {
+    display: flex;
+    border: 1px solid black;
+    background-color: lightcoral;
+    padding: 5px 10px;
+    width: fit-content;
+}
+
+.error-header {
+    font-size: x-large;
+    font-weight: bold;
+    color: white;
+    padding-right: 10px;
+}
+
+.error-msg {
+    font-size: x-large;
+}
+
 
 #grid-table {
     border: solid 1px grey;

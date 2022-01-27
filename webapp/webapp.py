@@ -1,7 +1,8 @@
 import json
 import uuid
 from dataclasses import asdict
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+from importlib_metadata import version
 from rratsolve import rratsolve, __version__
 
 
@@ -33,16 +34,19 @@ def solve():
     try:
         T = parse_toas(toas)
         u = float(toa_uncertainty)
+
+        if not len(T) >= 3:
+            raise ValueError("Need at least 3 TOAs")
+
+        # Store result until it is fetched by the results webpage
+        result_id = str(uuid.uuid4())
+        results_cache[result_id] = rratsolve(T, u, max_grid_size=30_000_000)
+    
     except Exception as err:
-        raise ValueError("Failed to parse input")
+        return render_template('error.html', error=str(err), version=__version__)
 
-    if not len(T) >= 3:
-        raise ValueError("Need at least 3 TOAs")
-
-    # Store result until it is fetched by the results webpage
-    result_id = str(uuid.uuid4())
-    results_cache[result_id] = rratsolve(T, u, max_grid_size=30_000_000)
-    return render_template('results.html', result_id=result_id, version=__version__)
+    else:
+        return render_template('results.html', result_id=result_id, version=__version__)
 
 
 @app.route('/')
