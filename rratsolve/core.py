@@ -46,6 +46,7 @@ class Result:
     solve_time : float
         Total time spent to get a solution, in seconds.
     """
+
     period: float
     period_uncertainty: float
     toas: List[float]
@@ -61,15 +62,13 @@ class Result:
 DAY_SECONDS = 86400.0
 
 
-def dot3(a, b, c):
+def dot3(a, b, c) -> float:
     """ Returns the matrix product A.B.C, implicitly assuming that the result is a scalar """
     return np.dot(a, np.dot(b, c))[0, 0]
 
 
 def format_uncertain_quantity(quantity: float, uncertainty: float) -> str:
-    """
-    Format a number with an associated uncertainty following the usual
-    pulsar astronomy convention.
+    """ Format a number with an associated uncertainty following the usual pulsar astronomy convention.
 
     >>> format_uncertain_quantity(1.05, 0.01)
     1.05(1)
@@ -83,10 +82,18 @@ def format_uncertain_quantity(quantity: float, uncertainty: float) -> str:
 def rratsolve(
     toas: Iterable[float], toa_uncertainty: float, max_grid_size: Optional[int] = None,
 ) -> Result:
-    """
-    Find the longest spin period that fits a sparse set of single pulse TOAs.
+    """ Find the longest spin period that fits a sparse set of single pulse TOAs.
 
-    The idea is to fit all time intervals between the first and all subsequent TOAs
+    The method is based on finding a common periodicity that divides all the time intervals
+    between the first and all subsequent TOAs. Only period is fitted; initial phase is ignored.
+    Step 1: Find the optimal spacing between consecutive trial periods
+    Step 2: Try periods between:
+        * Period min: 10 times the TOA uncertainty and
+        * Period max: the smallest interval between all TOA pairs plus 10%,
+        and pick the period that yields the smallest RMS phase residuals
+    Step 3: Refine the solution assuming that the rotation counts associated to each TOA
+        have been inferred correctly. In this case there is an analytical solution, which
+        the one returned.
 
     Parameters
     ----------
