@@ -110,6 +110,9 @@ def rratsolve(
     start_time = time.time()
 
     n = len(toas)
+    if not n >= 3:
+        raise ValueError("Need at least 3 TOAs")
+
     toa_uncertainties = np.repeat(toa_uncertainty, n)
     iref = 0
     tref = toas[iref]
