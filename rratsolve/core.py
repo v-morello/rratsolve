@@ -80,7 +80,7 @@ def format_uncertain_quantity(quantity: float, uncertainty: float) -> str:
 
 
 def rratsolve(
-    toas: Iterable[float], toa_uncertainty: float, max_grid_size: Optional[int] = None,
+    toas: Iterable[float], toa_uncertainty: float, max_grid_size: Optional[int] = 100_000_000,
 ) -> Result:
     """ Find the longest spin period that fits a sparse set of single pulse TOAs.
 
@@ -176,7 +176,9 @@ def rratsolve(
     uscale = (Qstar / (n - 1)) ** 0.5
 
     # 1-sigma uncertainty on Pstar
-    pstar_uncertainty = pstar * dot3(T.T, M, T) ** -0.5 * uscale
+    # NOTE: On some artificial inputs, uncertainty can be exactly zero, and we make sure that
+    # does not happen
+    pstar_uncertainty = max(pstar * dot3(T.T, M, T) ** -0.5 * uscale, np.finfo(float).eps)
     formatted_period = format_uncertain_quantity(pstar, pstar_uncertainty)
 
     # NOTE: must cast to int from np.int64 to avoid JSON serialization problems later
