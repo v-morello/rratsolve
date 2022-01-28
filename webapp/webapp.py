@@ -1,5 +1,6 @@
 import json
 import uuid
+from typing import List, Optional
 from dataclasses import asdict
 from flask import Flask, render_template, request
 from rratsolve import rratsolve, __version__
@@ -11,14 +12,14 @@ app = Flask(__name__)
 results_cache = {}
 
 
-def parse_toas(toas_str):
+def parse_toas(toas_str: str) -> List[float]:
     seq = toas_str.replace('\r', '').replace(',', '').split('\n')
     seq = filter(len, seq)
     return list(map(float, seq))
 
 
 @app.route('/result/<result_id>')
-def result_json(result_id=""):
+def result_json(result_id: Optional[str] = "") -> str:
     output = json.dumps(asdict(results_cache[result_id]), indent=4)
     # We can now delete the Result object from the cache
     del results_cache[result_id]
@@ -26,7 +27,7 @@ def result_json(result_id=""):
 
 
 @app.route('/results')
-def solve():
+def solve() -> str:
     toas = request.args.get('toas')
     toa_uncertainty = request.args.get('uncertainty')
 
@@ -40,7 +41,7 @@ def solve():
         # Store result until it is fetched by the results webpage
         result_id = str(uuid.uuid4())
         results_cache[result_id] = rratsolve(T, u, max_grid_size=30_000_000)
-    
+
     except Exception as err:
         return render_template('error.html', error=str(err), version=__version__)
 
@@ -49,12 +50,12 @@ def solve():
 
 
 @app.route('/')
-def mainpage():
+def mainpage() -> str:
     return render_template('index.html', version=__version__)
 
 
-def main():
-    app.run(debug=True)
+def main() -> None:
+    app.run()
 
 
 if __name__ == '__main__':
