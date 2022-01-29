@@ -2,6 +2,10 @@
 
 A brute-force but robust pulsar periodicity solver that needs only a few (but at least 3) sparse TOAs to infer a period. Has proven to be quite useful for getting an initial period guess for newly discovered radio sources in single pulse searches.
 
+### Web App
+
+A handy web version of RRATSolve is [currently hosted here](https://rratsolve.herokuapp.com/).
+
 ### Installation
 
 The recommended method is to clone the repository and install in development mode, preferably in a virtualenv/conda environment:
