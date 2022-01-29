@@ -76,6 +76,9 @@ def format_uncertain_quantity(quantity: float, uncertainty: float) -> str:
     decimals = -int(np.floor(log10(uncertainty)))
     qr = round(quantity, decimals)
     ur = int(round(uncertainty * 10 ** decimals))
+    if ur == 10:
+        ur = 1
+        decimals -= 1
     return f"{qr:.{decimals}f}({ur})"
 
 
